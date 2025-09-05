@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VibeCreator — Kit de Inicio</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+<header>
+  <h1>VibeCreator</h1>
+  <p>Un kit sencillo para crear un sitio tipo ChatGPT que genera apps sin código con OpenAI + Supabase + (plantillas iOS).</p>
+  <nav>
+    <a href="#quickstart">Inicio Rápido</a>
+    <a href="#cuentas">Cuentas</a>
+    <a href="#arquitectura">Arquitectura</a>
+    <a href="#esquema">Esquema Supabase</a>
+    <a href="#prompts">Prompts</a>
+    <a href="#api">API</a>
+    <a href="#ios">iOS / Xcode</a>
+    <a href="#deploy">Deploy</a>
+  </nav>
+</header>
+
+<main>
+<section id="quickstart">
+  <h2>Inicio Rápido</h2>
+  <ol>
+    <li>Clona este proyecto o descomprime el ZIP.</li>
+    <li>Crea un proyecto en <b>Supabase</b> y ejecuta el SQL en <code>supabase/schema.sql</code> y <code>supabase/policies.sql</code>.</li>
+    <li>Configura variables de entorno (server): <code>OPENAI_API_KEY</code>, <code>SUPABASE_URL</code>, <code>SUPABASE_SERVICE_ROLE_KEY</code>.</li>
+    <li>Levanta tu servidor (Node/Express o Next.js) y pega el ejemplo de <code>code/api/openai.ts</code>.</li>
+    <li>Usa los <a href="#prompts">prompts de sistema</a> y el <a href="#schema-json">schema JSON</a> para generar especificaciones de apps.</li>
+    <li>Genera los archivos SwiftUI con <code>node code/scripts/gen-ios.js</code> (luego ábrelos en Xcode).</li>
+  </ol>
+</section>
+
+<section id="cuentas">
+  <h2>Cuentas y claves</h2>
+  <ul>
+    <li><b>OpenAI</b>: API Key en <code>OPENAI_API_KEY</code>.</li>
+    <li><b>Supabase</b>: <code>SUPABASE_URL</code>, <code>SUPABASE_ANON_KEY</code> (cliente) y <code>SUPABASE_SERVICE_ROLE_KEY</code> (server).</li>
+    <li><b>Apple Developer</b> (opcional para TestFlight): Team ID, Issuer ID, Key ID, y Private Key.</li>
+  </ul>
+</section>
+
+<section id="arquitectura">
+  <h2>Arquitectura</h2>
+  <pre><code>Web (Next.js/React) ─┬─&gt; API /server
+                      │      ├─ OpenAI (Diseño de AppSpec → UI → Código)
+                      │      └─ Supabase (Auth, DB, Storage)
+                      └─ Studio (builder visual + plantillas)
+iOS (SwiftUI) ←─────── scripts/gen-ios.js (genera archivos base desde AppSpec JSON)</code></pre>
+  <p>El flujo principal: Usuario describe → LLM genera <i>AppSpec</i> JSON → se guardan versiones en Supabase → (opcional) se generan stubs de UI iOS.</p>
+</section>
+
+<section id="esquema">
+  <h2>Esquema Supabase</h2>
+  <p>Ejecuta los archivos <code>supabase/schema.sql</code> y <code>supabase/policies.sql</code>.</p>
+</section>
+
+<section id="prompts">
+  <h2>Prompts de Sistema &amp; Esquema JSON</h2>
+  <p>Usa los archivos en <code>prompts/</code>:</p>
+  <ul>
+    <li><code>system-appspec.md</code>: Diseñador de AppSpec (genera JSON.</li>
+    <li><code>system-uigen.md</code>: Compositor de UI desde AppSpec.</li>
+    <li><code>system-guardrail.md</code>: Validación/sanidad del JSON.</li>
+    <li><code>appspec.schema.json</code>: Esquema de salida en JSON.</li>
+  </ul>
+  <p>También puedes copiar el <a href="#schema-json">schema JSON</a> directamente.</p>
+</section>
+
+<section id="api">
+  <h2>API (TypeScript/Node)</h2>
+  <p>Ejemplo de endpoint que llama a OpenAI forzando JSON:</p>
+  <pre><code>// code/api/openai.ts</code></pre>
+  <p>Adapta esto a tu framework (Express/Next.js). Usa <code>response_format: { type: "json_object" }</code> y valida contra el schema.</p>
+</section>
+
+<section id="ios">
+  <h2>Salida iOS (SwiftUI)</h2>
+  <p>Genera archivos Swift desde AppSpec con:</p>
+  <pre><code>node code/scripts/gen-ios.js ./appspec.json ./out-ios</code></pre>
+  <ol>
+    <li>Abre Xcode → Crea un nuevo proyecto iOS con SwiftUI.</li>
+    <li>Reemplaza <code>ContentView.swift</code> y agrega los archivos generados desde <code>./out-ios</code>.</li>
+  </ol>
+</section>
+
+<section id="deploy">
+  <h2>Deploy</h2>
+  <ul>
+    <li>Frontend: Vercel/Netlify.</li>
+    <li>Backend: Vercel Functions/Fly.io/Render.</li>
+    <li>DB/Auth/Storage: Supabase.</li>
+    <li>iOS: Xcode → TestFlight (Fastlane opcional).</li>
+  </ul>
+</section>
+
+<footer>
+  <p>© 2025-08-21 VibeCreator Starter. Hecho para acelerar tu MVP.</p>
+</footer>
+<script>
+// (Opcional) aquí podrías añadir lógica para botones "Copiar"
+</script>
+</main>
+</body>
+</html>
